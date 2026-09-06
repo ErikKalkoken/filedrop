@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Upload to {{ folder.name }}</title>
+</head>
+<body>
+    <h1>Upload to {{ folder.name }}</h1>
+
+    {% if folder.description %}
+        {{ folder.description_html }}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
