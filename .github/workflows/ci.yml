@@ -25,5 +25,7 @@ jobs:
           python-version: "3.14"
       - name: Install dependencies
         run: pip install -e .
+      - name: Set up local settings
+        run: cp filedrop/settings/local.py.example filedrop/settings/local.py
       - name: Run Django tests
         run: python manage.py test

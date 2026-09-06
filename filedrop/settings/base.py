@@ -1,17 +1,11 @@
-import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY", "dev-insecure-secret-key-do-not-use-in-production"
-)
-
-DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
-
-ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if h]
-if DEBUG and not ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ["*"]
+# Safe fail-closed defaults; local.py/production.py are responsible for
+# SECRET_KEY, DEBUG, and ALLOWED_HOSTS.
+DEBUG = False
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "django.contrib.admin",
