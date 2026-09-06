@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -29,6 +30,7 @@ class FolderAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "is_active",
+        "file_count",
         "current_total_size_display",
         "created_by",
         "created_at",
@@ -57,6 +59,15 @@ class FolderAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(file_count=Count("files"))
+
+    def file_count(self, obj):
+        return obj.file_count
+
+    file_count.short_description = "Files"
+    file_count.admin_order_field = "file_count"
+
     def public_url_display(self, obj):
         if not obj.pk:
             return "(save folder to generate link)"
@@ -75,12 +86,18 @@ class FolderAdmin(admin.ModelAdmin):
 
 @admin.register(UploadedFile)
 class UploadedFileAdmin(admin.ModelAdmin):
-    list_display = ("original_filename", "folder", "size", "uploaded_at")
+    list_display = (
+        "original_filename",
+        "folder",
+        "size",
+        "uploaded_at",
+        "download_link",
+    )
     list_filter = ("folder",)
     search_fields = ("original_filename",)
     readonly_fields = (
         "folder",
-        "file",
+        "download_link",
         "original_filename",
         "content_type",
         "size",
@@ -90,3 +107,11 @@ class UploadedFileAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def download_link(self, obj):
+        if not obj.pk:
+            return ""
+        url = reverse("uploads:download", args=[obj.pk])
+        return format_html('<a href="{}">Download</a>', url)
+
+    download_link.short_description = "Download"
