@@ -11,6 +11,10 @@
         {{ folder.description_html }}
     {% endif %}
 
+    {% if folder.max_file_size %}
+        <p>Maximum file size: {{ folder.max_file_size|filesizeformat }}</p>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
